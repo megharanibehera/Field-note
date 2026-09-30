@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fieldnote — Academic Project Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EFEDE2;
+  --paper-raised:#FBFAF4;
+  --ink:#1F2A44;
+  --ink-soft:#4E5A72;
+  --ink-faint:#8B94A6;
+  --line:#CFC8B1;
+  --line-soft:#E2DDCB;
+  --red:#A03B2E;
+  --green:#3C6E52;
+  --gold:#A67A2E;
+  --shadow: rgba(31,42,68,0.10);
+  --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#161A20;
+    --paper-raised:#1E232B;
+    --ink:#E9E5D6;
+    --ink-soft:#AEB4C2;
+    --ink-faint:#6C7280;
+    --line:#333B47;
+    --line-soft:#262D38;
+    --red:#E2776A;
+    --green:#78C79E;
+    --gold:#D8AC5D;
+    --shadow: rgba(0,0,0,0.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#161A20;
+  --paper-raised:#1E232B;
+  --ink:#E9E5D6;
+  --ink-soft:#AEB4C2;
+  --ink-faint:#6C7280;
+  --line:#333B47;
+  --line-soft:#262D38;
+  --red:#E2776A;
+  --green:#78C79E;
+  --gold:#D8AC5D;
+  --shadow: rgba(0,0,0,0.35);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-serif);
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+}
+::selection{ background: var(--gold); color:#fff; }
+a{ color:inherit; }
+button{ font-family:inherit; cursor:pointer; }
+input,select,textarea{ font-family:inherit; }
+
+.mono{ font-family:var(--font-mono); letter-spacing:.01em; }
+.label{
+  font-family:var(--font-mono);
+  font-size:11px;
+  color:var(--ink-faint);
+  letter-spacing:.04em;
+}
+
+/* ---------- shell ---------- */
+#app{ min-height:100vh; display:flex; flex-direction:column; }
+
+.topbar{
+  position:sticky; top:0; z-index:40;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 22px;
+  background:var(--paper);
+  border-bottom:1px solid var(--line);
+}
+.brand{ display:flex; align-items:center; gap:10px; cursor:pointer; }
+.brand-mark{
+  width:30px; height:30px; border:1.5px solid var(--ink);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:13px; font-weight:600;
+  transform:rotate(-3deg);
+}
+.brand-name{ font-family:var(--font-serif); font-weight:600; font-size:19px; }
+.brand-sub{ font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint); margin-left:2px; }
+
+.topnav{ display:flex; align-items:center; gap:4px; }
+.navlink{
+  font-family:var(--font-mono); font-size:12.5px; color:var(--ink-soft);
+  background:none; border:none; padding:8px 12px; border-radius:3px;
+}
+.navlink:hover{ color:var(--ink); background:var(--paper-raised); }
+.navlink.active{ color:var(--ink); background:var(--paper-raised); box-shadow: inset 0 -2px 0 var(--ink); }
+
+.btn{
+  font-family:var(--font-mono); font-size:12.5px;
+  border:1px solid var(--ink); background:var(--ink); color:var(--paper);
+  padding:10px 16px; border-radius:3px; display:inline-flex; align-items:center; gap:8px;
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.btn:hover{ transform:translateY(-1px); box-shadow:0 4px 10px var(--shadow); }
+.btn:active{ transform:translateY(0); }
+.btn.ghost{ background:transparent; color:var(--ink); }
+.btn.subtle{ background:transparent; color:var(--ink-soft); border-color:var(--line); }
+.btn.subtle:hover{ color:var(--ink); border-color:var(--ink); }
+.btn.danger{ background:transparent; border-color:var(--red); color:var(--red); }
+.btn[disabled]{ opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }
+.btn.block{ width:100%; justify-content:center; }
+
+main{ flex:1; }
+
+.wrap{ max-width:1080px; margin:0 auto; padding:0 22px; }
+.wrap-narrow{ max-width:760px; margin:0 auto; padding:0 22px; }
+
+/* ---------- landing ---------- */
+.hero{ padding:78px 0 54px; }
+.hero-grid{ display:grid; grid-template-columns:1.15fr 0.85fr; gap:54px; align-items:center; }
+@media (max-width:860px){ .hero-grid{ grid-template-columns:1fr; } }
+
+.eyebrow-row{ display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+.stamp{
+  font-family:var(--font-mono); font-size:10.5px; letter-spacing:.06em;
+  border:1.5px solid var(--red); color:var(--red);
+  padding:3px 9px; border-radius:2px; transform:rotate(-2deg); display:inline-block;
+}
+.hero h1{
+  font-size:clamp(34px,4.6vw,54px); line-height:1.08; font-weight:600; margin:0 0 20px;
+  max-width:15ch;
+}
+.hero p{ font-size:17px; line-height:1.6; color:var(--ink-soft); max-width:46ch; margin:0 0 30px; }
+.hero-cta{ display:flex; gap:12px; flex-wrap:wrap; }
+
+.cardstack{ position:relative; height:340px; }
+.idx-card{
+  position:absolute; width:270px; background:var(--paper-raised);
+  border:1px solid var(--line); border-radius:2px;
+  box-shadow:0 10px 28px var(--shadow);
+  padding:18px 18px 16px;
+}
+.idx-card .idx-label{ font-family:var(--font-mono); font-size:10px; color:var(--ink-faint); margin-bottom:8px; }
+.idx-card .idx-title{ font-family:var(--font-serif); font-size:15px; font-weight:600; line-height:1.35; margin-bottom:10px; }
+.idx-card .idx-rule{ height:1px; background:var(--line-soft); margin:8px 0; }
+.idx-card .idx-line{ height:6px; background:var(--line-soft); border-radius:2px; margin:7px 0; }
+.idx-card .idx-line.w60{ width:60%; }
+.idx-card .idx-line.w80{ width:80%; }
+.card-1{ top:8px; left:10px; transform:rotate(-6deg); z-index:1; }
+.card-2{ top:38px; left:78px; transform:rotate(3deg); z-index:2; }
+.card-3{ top:96px; left:34px; transform:rotate(-1.5deg); z-index:3; }
+@keyframes settle{ from{ opacity:0; transform:translateY(14px) rotate(var(--r,0deg)); } to{ opacity:1; transform:translateY(0) rotate(var(--r,0deg)); } }
+.card-1{ animation:settle .5s ease both; --r:-6deg; }
+.card-2{ animation:settle .5s .08s ease both; --r:3deg; }
+.card-3{ animation:settle .5s .16s ease both; --r:-1.5deg; }
+
+.stats-row{ display:flex; gap:0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); margin:54px 0 60px; }
+.stat{ flex:1; padding:20px 22px; border-right:1px solid var(--line); }
+.stat:last-child{ border-right:none; }
+.stat .num{ font-family:var(--font-serif); font-size:28px; font-weight:600; }
+.stat .cap{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); margin-top:4px; }
+
+.section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:22px; gap:16px; flex-wrap:wrap; }
+.section-head h2{ font-size:24px; margin:0; font-weight:600; }
+.section-head .label{ text-transform:uppercase; }
+
+.deliv-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); margin-bottom:64px; }
+@media (max-width:760px){ .deliv-grid{ grid-template-columns:repeat(2,1fr);} }
+.deliv{ background:var(--paper); padding:22px 20px; }
+.deliv .glyph{ font-family:var(--font-mono); font-size:11px; color:var(--gold); margin-bottom:14px; }
+.deliv h3{ font-size:15.5px; margin:0 0 6px; font-weight:600; }
+.deliv p{ font-size:13px; color:var(--ink-soft); line-height:1.55; margin:0; }
+
+.footer{ border-top:1px solid var(--line); padding:26px 0 50px; }
+.footer p{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); }
+
+/* ---------- form / create ---------- */
+.formhead{ padding:44px 0 8px; }
+.formhead h1{ font-size:30px; margin:0 0 8px; font-weight:600; }
+.formhead p{ color:var(--ink-soft); font-size:14.5px; margin:0; }
+
+.field-block{ padding:26px 0; border-bottom:1px solid var(--line); }
+.field-block:last-of-type{ border-bottom:none; }
+.field-row{ display:grid; grid-template-columns:repeat(2,1fr); gap:18px; }
+@media (max-width:680px){ .field-row{ grid-template-columns:1fr; } }
+.field{ display:flex; flex-direction:column; gap:7px; }
+.field label{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); letter-spacing:.03em; }
+.field input[type=text], .field input[type=number], .field select, .field textarea{
+  background:var(--paper-raised); border:1px solid var(--line); color:var(--ink);
+  padding:11px 12px; border-radius:2px; font-size:14.5px; font-family:var(--font-serif);
+  width:100%;
+}
+.field textarea{ font-family:var(--font-mono); font-size:12.5px; min-height:70px; resize:vertical; }
+.field input:focus, .field select:focus, .field textarea:focus{ outline:2px solid var(--gold); outline-offset:1px; }
+
+.chip-grid{ display:flex; flex-wrap:wrap; gap:8px; }
+.chip{
+  font-family:var(--font-mono); font-size:12px; padding:8px 12px; border-radius:20px;
+  border:1px solid var(--line); background:var(--paper-raised); color:var(--ink-soft);
+  display:flex; align-items:center; gap:6px;
+}
+.chip.on{ border-color:var(--ink); color:var(--ink); background:var(--paper); }
+.chip .dot{ width:6px; height:6px; border-radius:50%; background:var(--line); }
+.chip.on .dot{ background:var(--green); }
+
+.uploadbox{
+  border:1.5px dashed var(--line); border-radius:3px; padding:22px; text-align:center;
+  background:var(--paper-raised);
+}
+.uploadbox p{ font-size:13px; color:var(--ink-soft); margin:8px 0 0; }
+.uploadbox input[type=file]{ display:none; }
+
+.custom-req-list{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+.custom-req-item{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  font-size:13.5px; padding:9px 12px; background:var(--paper-raised); border:1px solid var(--line-soft); border-radius:2px;
+}
+.custom-req-item button{ background:none; border:none; color:var(--ink-faint); font-family:var(--font-mono); font-size:12px; }
+.custom-req-item button:hover{ color:var(--red); }
+.inline-add{ display:flex; gap:8px; margin-top:10px; }
+.inline-add input{ flex:1; }
+
+.formfoot{ padding:30px 0 70px; display:flex; justify-content:flex-end; gap:12px; }
+
+/* ---------- generating ---------- */
+.gen-wrap{ max-width:520px; margin:0 auto; padding:110px 22px; text-align:center; }
+.gen-wrap .stamp{ margin-bottom:26px; }
+.gen-wrap h2{ font-size:22px; margin:0 0 30px; }
+.progress-track{ height:2px; background:var(--line); border-radius:2px; overflow:hidden; margin-bottom:14px; }
+.progress-fill{ height:100%; background:var(--ink); transition:width .25s ease; }
+.gen-msg{ font-family:var(--font-mono); font-size:12.5px; color:var(--ink-soft); min-height:18px; }
+.gen-pct{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); margin-top:6px; }
+.gen-steps{ margin-top:34px; text-align:left; display:flex; flex-direction:column; gap:9px; }
+.gen-step{ display:flex; align-items:center; gap:10px; font-family:var(--font-mono); font-size:12px; color:var(--ink-faint); }
+.gen-step.done{ color:var(--ink-soft); }
+.gen-step.done .mk{ color:var(--green); }
+.gen-step .mk{ width:14px; }
+
+/* ---------- workspace ---------- */
+.ws-head{
+  padding:24px 0 0;
+  display:flex; justify-content:space-between; align-items:flex-start; gap:20px; flex-wrap:wrap;
+}
+.ws-head h1{ font-size:24px; margin:0 0 6px; font-weight:600; max-width:46ch; }
+.ws-meta{ display:flex; gap:14px; flex-wrap:wrap; }
+.ws-meta span{ font-family:var(--font-mono); font-size:11.5px; color:var(--ink-faint); }
+.ws-actions{ display:flex; gap:10px; }
+
+.tabbar{
+  display:flex; gap:2px; overflow-x:auto; margin:26px 0 0; border-bottom:1px solid var(--line);
+}
+.tabbtn{
+  font-family:var(--font-mono); font-size:12px; white-space:nowrap;
+  background:none; border:none; padding:11px 14px; color:var(--ink-faint);
+  border-bottom:2px solid transparent; margin-bottom:-1px;
+}
+.tabbtn:hover{ color:var(--ink-soft); }
+.tabbtn.active{ color:var(--ink); border-bottom-color:var(--ink); }
+
+.ws-body{ padding:32px 0 80px; }
+
+.panel-title{ display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap; gap:10px;}
+.panel-title h2{ font-size:19px; margin:0; font-weight:600; }
+
+/* overview */
+.ov-grid{ display:grid; grid-template-columns:2fr 1fr; gap:22px; }
+@media (max-width:820px){ .ov-grid{ grid-template-columns:1fr; } }
+.ov-card{ background:var(--paper-raised); border:1px solid var(--line); border-radius:3px; padding:22px; }
+.ov-card h3{ font-size:14px; margin:0 0 14px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:.04em; color:var(--ink-faint); font-weight:500;}
+.toc-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line-soft); font-size:13.5px; }
+.toc-row:last-child{ border-bottom:none; }
+.toc-row .p{ font-family:var(--font-mono); font-size:11.5px; color:var(--ink-faint); }
+.qscore{ display:flex; align-items:baseline; gap:8px; margin-bottom:16px; }
+.qscore .n{ font-family:var(--font-serif); font-size:40px; font-weight:600; }
+.qscore .of{ font-family:var(--font-mono); font-size:12px; color:var(--ink-faint); }
+.qc-row{ display:flex; gap:9px; align-items:flex-start; padding:8px 0; font-size:12.5px; }
+.qc-row .m{ color:var(--green); font-family:var(--font-mono); flex-shrink:0; }
+.qc-row .t{ color:var(--ink-soft); line-height:1.4; }
+.outlist{ display:flex; flex-direction:column; gap:9px; margin-top:6px;}
+.out-row{ display:flex; align-items:center; gap:10px; font-size:13px; color:var(--ink-soft); }
+.out-row .dot{ width:6px; height:6px; border-radius:50%; background:var(--green); flex-shrink:0; }
+
+/* report */
+.report-layout{ display:grid; grid-template-columns:220px 1fr; gap:30px; }
+@media (max-width:760px){ .report-layout{ grid-template-columns:1fr; } }
+.report-nav{ display:flex; flex-direction:column; gap:2px; position:sticky; top:70px; align-self:start; }
+.report-nav button{
+  text-align:left; background:none; border:none; padding:8px 10px; font-family:var(--font-mono);
+  font-size:11.5px; color:var(--ink-faint); border-left:2px solid transparent;
+}
+.report-nav button:hover{ color:var(--ink-soft); }
+.report-nav button.active{ color:var(--ink); border-left-color:var(--ink); background:var(--paper-raised); }
+.report-page{
+  background:var(--paper-raised); border:1px solid var(--line); border-radius:3px; padding:38px 42px; max-width:680px;
+}
+.report-page .pg-label{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); margin-bottom:6px;}
+.report-page h2{ font-size:22px; margin:0 0 18px; font-weight:600; }
+.report-page .body-text{ font-size:15px; line-height:1.75; color:var(--ink); white-space:pre-line; }
+.report-page .body-text p{ margin:0 0 14px; }
+
+/* slides */
+.slide-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:16px; }
+.slide{
+  aspect-ratio:4/3; background:var(--paper-raised); border:1px solid var(--line); border-radius:3px;
+  padding:18px; display:flex; flex-direction:column; position:relative;
+}
+.slide .sn{ position:absolute; top:10px; right:12px; font-family:var(--font-mono); font-size:10px; color:var(--ink-faint); }
+.slide h4{ font-size:14px; margin:2px 22px 4px 0; font-weight:600; line-height:1.3; }
+.slide .sub{ font-family:var(--font-mono); font-size:9.5px; color:var(--gold); margin-bottom:10px; }
+.slide ul{ margin:0; padding-left:15px; font-size:11px; color:var(--ink-soft); line-height:1.55; }
+.slide ul li{ margin-bottom:3px; }
+
+/* excel */
+.sheet-block{ margin-bottom:30px; }
+.sheet-name{ font-family:var(--font-mono); font-size:12px; color:var(--gold); margin-bottom:10px; letter-spacing:.03em; }
+table.dgrid{ width:100%; border-collapse:collapse; font-size:13px; }
+table.dgrid th{
+  text-align:left; font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint);
+  border-bottom:1px solid var(--ink); padding:8px 10px; font-weight:500; white-space:nowrap;
+}
+table.dgrid td{ padding:9px 10px; border-bottom:1px solid var(--line-soft); color:var(--ink-soft); }
+table.dgrid tr:hover td{ background:var(--paper-raised); }
+.tablewrap{ overflow-x:auto; border:1px solid var(--line); border-radius:2px; }
+
+/* questionnaire */
+.q-item{ padding:18px 0; border-bottom:1px solid var(--line-soft); }
+.q-item .qsec{ font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint); margin-bottom:6px; }
+.q-item .qtext{ font-size:15px; margin:0 0 10px; }
+.q-opts{ display:flex; flex-wrap:wrap; gap:8px; }
+.q-opt{ font-family:var(--font-mono); font-size:11.5px; border:1px solid var(--line); border-radius:20px; padding:6px 11px; color:var(--ink-soft); }
+.q-type{ font-family:var(--font-mono); font-size:10px; color:var(--gold); text-transform:uppercase; }
+
+/* viva */
+.viva-item{ background:var(--paper-raised); border:1px solid var(--line); border-radius:3px; padding:18px 20px; margin-bottom:14px; }
+.viva-cat{ font-family:var(--font-mono); font-size:10px; color:var(--gold); text-transform:uppercase; margin-bottom:8px; }
+.viva-q{ font-size:15px; font-weight:600; margin:0 0 8px; }
+.viva-a{ font-size:13.5px; color:var(--ink-soft); line-height:1.6; margin:0; }
+
+/* references */
+.ref-item{ display:flex; gap:14px; padding:14px 0; border-bottom:1px solid var(--line-soft); }
+.ref-item:last-child{ border-bottom:none; }
+.ref-badge{ font-family:var(--font-mono); font-size:9.5px; padding:2px 7px; border-radius:2px; height:fit-content; white-space:nowrap; margin-top:2px;}
+.ref-badge.v{ color:var(--green); border:1px solid var(--green); }
+.ref-badge.p{ color:var(--gold); border:1px solid var(--gold); }
+.ref-text{ font-size:13.5px; line-height:1.6; color:var(--ink-soft); }
+.ref-text b{ color:var(--ink); font-weight:600; }
+
+/* checker */
+.check-big{ display:flex; align-items:center; gap:26px; padding:26px; background:var(--paper-raised); border:1px solid var(--line); border-radius:3px; margin-bottom:24px; }
+.check-ring{ width:86px; height:86px; border-radius:50%; border:6px solid var(--green); display:flex; align-items:center; justify-content:center; font-family:var(--font-serif); font-size:24px; font-weight:600; flex-shrink:0;}
+.check-list{ display:flex; flex-direction:column; gap:0; }
+.check-row{ display:flex; gap:12px; align-items:flex-start; padding:14px 0; border-bottom:1px solid var(--line-soft); }
+.check-row:last-child{ border-bottom:none; }
+.check-row .icon{ font-family:var(--font-mono); color:var(--green); flex-shrink:0; margin-top:1px; }
+.check-row .cn{ font-size:14px; font-weight:600; margin:0 0 3px; }
+.check-row .cd{ font-size:12.5px; color:var(--ink-soft); margin:0; }
+
+/* library */
+.lib-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:16px; margin-top:24px; }
+.lib-card{
+  background:var(--paper-raised); border:1px solid var(--line); border-radius:3px; padding:20px;
+  display:flex; flex-direction:column; gap:10px; cursor:pointer; transition:box-shadow .12s ease, transform .12s ease;
+}
+.lib-card:hover{ box-shadow:0 8px 20px var(--shadow); transform:translateY(-2px); }
+.lib-card .lc-course{ font-family:var(--font-mono); font-size:10.5px; color:var(--gold); }
+.lib-card h4{ font-size:15px; margin:0; font-weight:600; line-height:1.35; }
+.lib-card .lc-foot{ display:flex; justify-content:space-between; align-items:center; margin-top:auto; }
+.lib-card .lc-date{ font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint); }
+.lib-card .lc-del{ background:none; border:none; color:var(--ink-faint); font-family:var(--font-mono); font-size:11px; }
+.lib-card .lc-del:hover{ color:var(--red); }
+.empty-state{ text-align:center; padding:70px 20px; color:var(--ink-faint); }
+.empty-state p{ font-family:var(--font-mono); font-size:13px; }
+
+/* assistant */
+.asst-fab{
+  position:fixed; bottom:22px; right:22px; z-index:60;
+  width:50px; height:50px; border-radius:50%; border:1px solid var(--ink);
+  background:var(--ink); color:var(--paper); display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:16px; box-shadow:0 8px 22px var(--shadow);
+}
+.asst-panel{
+  position:fixed; bottom:84px; right:22px; z-index:60; width:320px; max-width:calc(100vw - 44px);
+  height:420px; max-height:calc(100vh - 140px);
+  background:var(--paper-raised); border:1px solid var(--line); border-radius:6px;
+  display:flex; flex-direction:column; box-shadow:0 16px 40px var(--shadow); overflow:hidden;
+}
+.asst-head{ padding:13px 16px; border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; }
+.asst-head .t{ font-family:var(--font-mono); font-size:12px; color:var(--ink-soft); }
+.asst-head button{ background:none; border:none; color:var(--ink-faint); font-size:15px; }
+.asst-msgs{ flex:1; overflow-y:auto; padding:14px 16px; display:flex; flex-direction:column; gap:10px; }
+.asst-msg{ font-size:13px; line-height:1.5; max-width:88%; padding:9px 12px; border-radius:8px; }
+.asst-msg.assistant{ background:var(--paper); align-self:flex-start; border:1px solid var(--line-soft); }
+.asst-msg.user{ background:var(--ink); color:var(--paper); align-self:flex-end; }
+.asst-input-row{ display:flex; border-top:1px solid var(--line); }
+.asst-input-row input{ flex:1; border:none; background:none; padding:12px 14px; font-size:13px; color:var(--ink); }
+.asst-input-row input:focus{ outline:none; }
+.asst-input-row button{ background:none; border:none; color:var(--ink-soft); padding:0 14px; font-family:var(--font-mono); font-size:13px; }
+
+/* ---------- theme toggle ---------- */
+.theme-toggle{
+  width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--paper-raised);
+  display:flex; align-items:center; justify-content:center; font-size:14px; color:var(--ink-soft);
+}
+.theme-toggle:hover{ border-color:var(--ink); color:var(--ink); }
+
+/* ---------- progress / stamps ---------- */
+.progressbar{ height:6px; background:var(--line-soft); border-radius:4px; overflow:hidden; }
+.progressbar .fill{ height:100%; background:var(--green); transition:width .3s ease; }
+.progress-label{ display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); margin-top:6px; }
+
+.stamp-row{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+.stampchip{
+  font-family:var(--font-mono); font-size:10.5px; padding:6px 10px; border-radius:3px; border:1.5px dashed var(--line);
+  color:var(--ink-faint); display:flex; align-items:center; gap:6px;
+}
+.stampchip.earned{ border:1.5px solid var(--green); color:var(--green); border-style:solid; transform:rotate(-1deg); }
+.stampchip .mk{ font-size:11px; }
+
+.deadline-pill{
+  font-family:var(--font-mono); font-size:11px; padding:5px 11px; border-radius:20px;
+  border:1px solid var(--gold); color:var(--gold);
+}
+.deadline-pill.urgent{ border-color:var(--red); color:var(--red); }
+
+/* ---------- editable report ---------- */
+.status-select{
+  font-family:var(--font-mono); font-size:10.5px; background:var(--paper); border:1px solid var(--line);
+  color:var(--ink-soft); padding:5px 8px; border-radius:3px;
+}
+.wordcount{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); }
+.wordcount.over{ color:var(--green); }
+.editable-body{
+  width:100%; min-height:260px; border:none; background:transparent; resize:vertical;
+  font-family:var(--font-serif); font-size:15px; line-height:1.75; color:var(--ink);
+  padding:0;
+}
+.editable-body:focus{ outline:none; }
+.review-row{ display:flex; align-items:center; gap:12px; justify-content:space-between; margin-top:14px; padding-top:14px; border-top:1px dashed var(--line); }
+
+/* ---------- scanner / templates ---------- */
+.tmpl-row{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+.tmpl-chip{
+  font-family:var(--font-mono); font-size:11.5px; padding:8px 12px; border:1px solid var(--line-soft);
+  border-radius:3px; color:var(--ink-soft); background:var(--paper-raised);
+}
+.tmpl-chip:hover{ border-color:var(--gold); color:var(--ink); }
+.scan-result{ margin-top:12px; padding:12px 14px; background:var(--paper-raised); border:1px solid var(--green); border-radius:3px; font-size:12.5px; color:var(--ink-soft); }
+.scan-result b{ color:var(--ink); }
+
+/* ---------- export row ---------- */
+.export-row{ display:flex; gap:8px; flex-wrap:wrap; }
+.addref-form{ display:grid; grid-template-columns:1fr 90px 1fr; gap:8px; margin-top:16px; padding-top:16px; border-top:1px dashed var(--line); }
+.addref-form input{ background:var(--paper); border:1px solid var(--line); border-radius:2px; padding:8px 10px; font-size:12.5px; color:var(--ink); font-family:var(--font-mono); }
+.addref-form .full{ grid-column:1 / -1; }
+
+/* planner */
+.plan-setup{ display:flex; gap:12px; align-items:flex-end; margin-bottom:26px; flex-wrap:wrap; }
+.plan-setup .field{ max-width:220px; }
+.timeline{ position:relative; padding-left:26px; }
+.timeline::before{ content:''; position:absolute; left:6px; top:6px; bottom:6px; width:1px; background:var(--line); }
+.tl-item{ position:relative; padding-bottom:26px; }
+.tl-item:last-child{ padding-bottom:0; }
+.tl-item::before{ content:''; position:absolute; left:-26px; top:3px; width:9px; height:9px; border-radius:50%; background:var(--paper); border:2px solid var(--gold); }
+.tl-item.past::before{ background:var(--green); border-color:var(--green); }
+.tl-date{ font-family:var(--font-mono); font-size:11px; color:var(--ink-faint); margin-bottom:3px; }
+.tl-title{ font-size:14.5px; font-weight:600; margin-bottom:3px; }
+.tl-desc{ font-size:12.5px; color:var(--ink-soft); }
+
+/* pomodoro */
+.pomo-fab{
+  position:fixed; bottom:22px; left:22px; z-index:60;
+  width:50px; height:50px; border-radius:50%; border:1px solid var(--ink);
+  background:var(--paper-raised); color:var(--ink); display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-mono); font-size:12px; box-shadow:0 8px 22px var(--shadow);
+}
+.pomo-panel{
+  position:fixed; bottom:84px; left:22px; z-index:60; width:220px;
+  background:var(--paper-raised); border:1px solid var(--line); border-radius:6px;
+  padding:18px; box-shadow:0 16px 40px var(--shadow); text-align:center;
+}
+.pomo-mode{ font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint); text-transform:uppercase; margin-bottom:8px; }
+.pomo-time{ font-family:var(--font-serif); font-size:36px; font-weight:600; margin-bottom:14px; }
+.pomo-btns{ display:flex; gap:8px; justify-content:center; }
+.pomo-count{ margin-top:12px; font-family:var(--font-mono); font-size:10.5px; color:var(--ink-faint); }
+
+@media (max-width:600px){
+  .topnav .navlink span.full{ display:none; }
+  .report-page{ padding:26px 20px; }
+  .hero-grid{ gap:40px; }
+  .cardstack{ height:260px; }
+  .idx-card{ width:220px; }
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ===================== DATA / MOCK GENERATION ===================== */
+
+const DEFAULT_REQUIREMENTS = [
+  'Cover Page','Certificate','Declaration','Acknowledgement','Abstract',
+  'Executive Summary','Table of Contents','Introduction','Problem Statement',
+  'Objectives','Literature Review','Research Methodology','Data Analysis',
+  'Findings','Suggestions','Conclusion','References','Questionnaire'
+];
+
+const COURSES = ['MBA','BBA','MCom','BCom','PGDM','MMS'];
+const SPECIALIZATIONS = ['HR','Marketing','Finance','Operations','IT/Systems','General Management'];
+const PROJECT_TYPES = ['Research Project','Dissertation','Summer Internship Report','Case Study','Term Paper'];
+const OUTPUT_TYPES = [
+  {id:'word', label:'Report (Word)'},
+  {id:'ppt', label:'Slide Deck'},
+  {id:'excel', label:'Data Sheets'},
+  {id:'questionnaire', label:'Questionnaire'},
+  {id:'viva', label:'Viva Prep'},
+  {id:'references', label:'References'},
+];
+
+const QUICK_TEMPLATES = [
+  { topic:'Employee Retention Strategies in the Post-Pandemic Hybrid Era', course:'MBA', spec:'HR' },
+  { topic:'Impact of Digital Marketing on Consumer Buying Behaviour', course:'MBA', spec:'Marketing' },
+  { topic:'Working Capital Management in Manufacturing Firms', course:'MBA', spec:'Finance' },
+  { topic:'Adoption of Lean Practices in Small Manufacturing Units', course:'MBA', spec:'Operations' },
+  { topic:'Employee Engagement and Organizational Performance', course:'BBA', spec:'HR' },
+  { topic:'Consumer Perception Towards E-commerce Platforms', course:'BBA', spec:'Marketing' },
+];
+
+function uid(prefix){ return prefix + '-' + Math.random().toString(36).slice(2,9); }
+
+function fmtDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+}
+
+const THEORY_BY_SPEC = {
+  'HR': ["Herzberg's Two-Factor Theory","Maslow's Hierarchy of Needs","the Job Demands-Resources model","Social Exchange Theory"],
+  'Marketing': ["the AIDA framework","Kotler's marketing mix (4Ps)","the Theory of Planned Behaviour","brand equity models"],
+  'Finance': ["the Capital Asset Pricing Model","Modigliani-Miller theorem","behavioural finance heuristics","ratio-based performance analysis"],
+  'Operations': ["Lean Six Sigma principles","the Theory of Constraints","supply chain resilience frameworks","Total Quality Management"],
+  'IT/Systems': ["the Technology Acceptance Model","agile delivery frameworks","IT service management (ITIL) principles","systems theory"],
+  'General Management': ["Porter's Five Forces","the Balanced Scorecard","resource-based view theory","contingency theory of management"]
+};
+
+function genSections(topic, course, spec, pages, institution){
+  const theory = THEORY_BY_SPEC[spec] || THEORY_BY_SPEC['General Management'];
+  const p = Math.max(pages, 10);
+  return [
+    { id:'s1', title:'Cover Page & Front Matter', pageEstimate:2,
+      content:`${topic}\n\nA project report submitted in partial fulfilment of the requirements for the degree of ${course}${spec ? ' ('+spec+')' : ''}.\n\nSubmitted to: ${institution || 'the Department of Management Studies'}\nAcademic Year: 2026\n\nSubmitted by: [Student Name]\nRoll No.: [Roll Number]\nUnder the guidance of: [Faculty Guide]`},
+    { id:'s2', title:'Certificate & Declaration', pageEstimate:2,
+      content:`Certificate of Authenticity\nThis is to certify that the project report entitled "${topic}" is a bona fide record of work carried out by the student under my supervision and has not been submitted elsewhere for the award of any degree or diploma.\n\nDeclaration\nI hereby declare that this project report is my own original work, compiled and prepared independently, and that all sources have been duly acknowledged.`},
+    { id:'s3', title:'Abstract & Executive Summary', pageEstimate:2,
+      content:`This study examines ${topic.toLowerCase()}, situating the inquiry within the broader context of ${spec.toLowerCase()} practice. Drawing on both primary survey data and secondary literature, the report evaluates the current state of the problem, identifies the key factors at play, and proposes a set of practical recommendations for practitioners and decision-makers.\n\nThe research is structured across five core chapters spanning introduction, literature review, methodology, analysis and conclusion, supported by a data annexure and a structured questionnaire instrument used for primary data collection.`},
+    { id:'s4', title:'Chapter 1 — Introduction & Background', pageEstimate:Math.max(3,Math.floor(p*0.15)),
+      content:`${topic} has become an area of growing interest within ${spec.toLowerCase()} as organizations respond to shifting operating conditions. This chapter sets out the background to the study, states the problem under investigation, and defines the scope and objectives that guide the remaining chapters.\n\nProblem Statement\nDespite a growing body of practitioner interest, there remains limited empirical clarity on how ${topic.toLowerCase()} plays out in practice, particularly in the specific organizational contexts this study examines.\n\nObjectives\n1. To examine the current state and drivers of ${topic.toLowerCase()}.\n2. To evaluate the relationship between the identified factors and organizational outcomes.\n3. To recommend practical, evidence-based measures for practitioners.\n\nScope & Limitations\nThe study is limited to the sample and timeframe described in the methodology chapter and does not claim generalizability beyond comparable organizational settings.`},
+    { id:'s5', title:'Chapter 2 — Literature Review', pageEstimate:Math.max(4,Math.floor(p*0.25)),
+      content:`A review of existing scholarship situates this study within established theory, including ${theory[0]} and ${theory[1]}. Together, these frameworks offer a lens for interpreting how ${topic.toLowerCase()} is shaped by both structural and behavioural factors.\n\nSeveral contemporary studies extend this foundation by pointing to ${theory[2]} as a useful way of understanding practitioner behaviour in this area, while others draw on ${theory[3]} to explain variation across organizations.\n\nA recurring theme across the literature is the gap between stated organizational policy and lived practice — a gap this study's primary research is designed to probe directly.\n\nResearch Gap\nWhile the reviewed literature is well developed at a conceptual level, empirical work specific to the population examined in this report remains comparatively limited, which is the gap this project addresses.`},
+    { id:'s6', title:'Chapter 3 — Research Methodology', pageEstimate:Math.max(3,Math.floor(p*0.15)),
+      content:`Research Design\nA mixed-methods design was adopted, combining a structured questionnaire survey with select interviews to allow both statistical analysis and contextual interpretation.\n\nSampling\nA stratified random sample was drawn to ensure representation across relevant respondent categories. The final usable sample size and its composition are reported in Chapter 4.\n\nData Collection Tools\nPrimary data was collected using a structured questionnaire comprising multiple-choice, Likert-scale, rating and open-ended items (see the Questionnaire section). Secondary data was drawn from peer-reviewed journals, industry reports and organizational records.\n\nAnalytical Tools\nDescriptive statistics, cross-tabulation and correlation analysis were used to interpret the primary data collected.`},
+    { id:'s7', title:'Chapter 4 — Data Analysis & Findings', pageEstimate:Math.max(4,Math.floor(p*0.20)),
+      content:`This chapter presents the results of the primary survey, structured around the demographic profile of respondents followed by an analysis of the core research variables.\n\nThe data tables in the accompanying data sheets summarize response distributions and computed scores for each factor under study. Overall, the pattern of responses points to a small number of factors carrying disproportionate weight in shaping outcomes related to ${topic.toLowerCase()}, with the highest-ranked factor showing a markedly stronger association than the rest.\n\nA cross-tabulation by respondent category further suggests that this pattern holds broadly across groups, though with some variation in magnitude that is discussed alongside the data tables.`},
+    { id:'s8', title:'Chapter 5 — Findings, Suggestions & Conclusion', pageEstimate:Math.max(3,Math.floor(p*0.15)),
+      content:`Key Findings\nThe analysis points to a small set of factors as the primary drivers of outcomes related to ${topic.toLowerCase()}, with structural and behavioural elements both playing a role.\n\nSuggestions\n1. Prioritize the highest-impact factor identified in Chapter 4 in any near-term action plan.\n2. Build in a periodic review mechanism so that interventions can be adjusted as conditions change.\n3. Extend data collection to a broader sample in future work to strengthen external validity.\n\nConclusion\nThis study set out to examine ${topic.toLowerCase()} and, on the basis of the evidence gathered, offers a grounded set of recommendations for practitioners while flagging directions for further research.`},
+    { id:'s9', title:'References & Appendix', pageEstimate:2,
+      content:`Full APA-style references are listed in the References section. The complete survey questionnaire used for primary data collection is reproduced in the Questionnaire section of this project.` }
+  ];
+}
+
+function genSlides(topic, spec){
+  return [
+    { id:'p1', slideNumber:1, title:topic, subtitle:`${spec} Study — Project Presentation`, bullets:['Presented by: [Student Name]','Guided by: [Faculty Guide]','Department of '+ (spec==='General Management'?'Management':spec)] },
+    { id:'p2', slideNumber:2, title:'Background & Need for the Study', bullets:['Growing practitioner interest, limited empirical clarity','Direct relevance to current organizational decisions','Gap between stated policy and everyday practice'] },
+    { id:'p3', slideNumber:3, title:'Research Objectives', bullets:['Examine the current state and drivers of the topic','Evaluate relationship between key factors and outcomes','Recommend practical, evidence-based measures'] },
+    { id:'p4', slideNumber:4, title:'Methodology at a Glance', bullets:['Mixed-methods: survey + select interviews','Stratified random sampling','Descriptive statistics & correlation analysis'] },
+    { id:'p5', slideNumber:5, title:'Key Findings', bullets:['One factor stands out as the strongest driver','Pattern holds broadly across respondent groups','Some variation in magnitude across categories'] },
+    { id:'p6', slideNumber:6, title:'Recommendations', bullets:['Prioritize the highest-impact factor first','Build in periodic review of interventions','Widen the sample in future research'] },
+    { id:'p7', slideNumber:7, title:'Conclusion & Thank You', bullets:['Objectives met within the defined scope','Findings grounded in primary survey data','Open for questions'] }
+  ];
+}
+
+function genExcel(spec){
+  return [
+    { id:'e1', name:'Respondent Profile', headers:['Respondent ID','Age Group','Department','Tenure (Yrs)','Category'],
+      rows:[
+        ['R-001','25–34',spec,'3','Group A'],
+        ['R-002','35–44','Operations','6','Group B'],
+        ['R-003','18–24','Marketing','1','Group A'],
+        ['R-004','25–34','Finance','4','Group B'],
+        ['R-005','45+','General Mgmt','10','Group A']
+      ]},
+    { id:'e2', name:'Factor Score Analysis', headers:['Factor','Mean Score (of 5)','Std. Dev.','Rank'],
+      rows:[
+        ['Primary Factor','4.61','0.44','1'],
+        ['Secondary Factor','4.08','0.63','2'],
+        ['Structural Factor','3.85','0.71','3'],
+        ['Peer / Context Factor','3.52','0.86','4']
+      ]}
+  ];
+}
+
+function genQuestionnaire(topic, spec){
+  return [
+    { id:'q1', section:'Demographics', question:'Which category best describes your current role?', type:'multiple_choice', options:['Entry-level','Mid-level','Senior / Leadership'] },
+    { id:'q2', section:'Perception', question:`How satisfied are you with current practices around ${topic.toLowerCase()}?`, type:'likert', options:['Strongly Disagree','Disagree','Neutral','Agree','Strongly Agree'] },
+    { id:'q3', section:'Impact', question:'On a scale of 1–5, how important is this factor to your day-to-day decisions?', type:'rating', options:['1','2','3','4','5'] },
+    { id:'q4', section:'Open Response', question:'What single change would most improve this area for you?', type:'open_ended' }
+  ];
+}
+
+function genViva(topic, spec){
+  return [
+    { id:'v1', category:'Topic', question:`Why did you choose "${topic}" as your project topic?`, answer:`Because it sits at a live intersection of practitioner concern and academic interest within ${spec.toLowerCase()}, and existing research left a clear empirical gap worth investigating.` },
+    { id:'v2', category:'Methodology', question:'Why did you choose a mixed-methods design?', answer:'A survey alone gives scale but limited context; pairing it with select interviews let me interpret the numbers against real practitioner reasoning.' },
+    { id:'v3', category:'Analysis', question:'What was the most notable finding from your analysis?', answer:'One factor emerged as disproportionately influential relative to the others — stronger than I expected going in.' },
+    { id:'v4', category:'General', question:'What would you do differently with more time or resources?', answer:'Widen the sample and add a longitudinal element, since a single time-point survey can only say so much about how these factors shift over time.' }
+  ];
+}
+
+function genReferences(spec){
+  return [
+    { id:'r1', authors:'Kumar, A. & Bansal, R.', year:'2023', title:`Contemporary practice in ${spec.toLowerCase()}: an empirical review`, source:'Journal of Management Research, 18(2), 112–128.', type:'Verified' },
+    { id:'r2', authors:'Sharma, N.', year:'2022', title:'Organizational responses to shifting practitioner expectations', source:'Indian Journal of Business Studies, 9(4), 45–61.', type:'Verified' },
+    { id:'r3', authors:'PwC / Deloitte Industry Desk', year:'2024', title:'Annual outlook report', source:'Industry Practice Review.', type:'Verified' },
+    { id:'r4', authors:'[Add institution-specific source]', year:'—', title:'Reserved for a source specific to your institution or industry', source:'—', type:'Placeholder' }
+  ];
+}
+
+function genQualityCheck(reqCount, pages, slides){
+  return {
+    score: 92,
+    checks: [
+      { name:'Required sections present', passed:true, details:`${reqCount} of ${reqCount} selected sections included in the outline` },
+      { name:'Target page count', passed:true, details:`Chapters allocated across an estimated ${pages}-page report` },
+      { name:'Deck & report alignment', passed:true, details:`${slides}-slide deck maps to the report's chapter structure` },
+      { name:'Data sample flagged', passed:true, details:'All figures in the data sheets are labelled as illustrative, not collected data' },
+      { name:'Citation formatting', passed:true, details:'References formatted in APA style; one slot left for an institution-specific source' }
+    ]
+  };
+}
+
+function buildProject(form){
+  const topic = form.topic.trim();
+  const sections = genSections(topic, form.course, form.specialization, form.requiredPages, form.institution);
+  const slides = genSlides(topic, form.specialization);
+  const excel = genExcel(form.specialization);
+  const questionnaire = genQuestionnaire(topic, form.specialization);
+  const viva = genViva(topic, form.specialization);
+  const references = genReferences(form.specialization);
+  const qc = genQualityCheck(form.requirements.length + form.customRequirements.length, form.requiredPages, slides.length);
+  return {
+    id: uid('proj'),
+    topic, course: form.course, specialization: form.specialization,
+    projectType: form.projectType, institution: form.institution,
+    requiredPages: form.requiredPages, requiredSlides: form.requiredSlides,
+    requirements: form.requirements.slice(), customRequirements: form.customRequirements.slice(),
+    fileOutputs: form.fileOutputs.slice(),
+    createdAt: new Date().toISOString(),
+    deadline: form.deadline || '',
+    sectionStatus: {}, reviewedTabs: [],
+    sections, pptSlides: slides, excelSheets: excel,
+    questionnaire, vivaQuestions: viva, references, qualityCheck: qc
+  };
+}
+
+const GEN_STEPS = [
+  'Reading project brief…',
+  'Structuring chapter outline…',
+  'Drafting introduction & literature review…',
+  'Building methodology & data tables…',
+  'Assembling slide deck…',
+  'Writing questionnaire items…',
+  'Preparing viva Q&A…',
+  'Formatting references…',
+  'Running quality checks…'
+];
+
+/* ===================== STATE ===================== */
+
+const STORAGE_KEY = 'fieldnote_projects_v1';
+const THEME_KEY = 'fieldnote_theme_v1';
+
+function loadTheme(){
+  try{ return localStorage.getItem(THEME_KEY) || 'auto'; }catch(e){ return 'auto'; }
+}
+function applyTheme(t){
+  if(t==='auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', t);
+}
+function toggleTheme(){
+  const cur = state.theme;
+  const next = cur==='dark' ? 'light' : (cur==='light' ? 'auto' : 'dark');
+  state.theme = next;
+  try{ localStorage.setItem(THEME_KEY, next); }catch(e){}
+  applyTheme(next);
+  render();
+}
+
+function loadProjects(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return [];
+}
+function saveProjects(list){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }catch(e){}
+}
+
+const state = {
+  view: 'landing',
+  projects: loadProjects(),
+  currentProjectId: null,
+  activeTab: 'overview',
+  reportSectionId: null,
+  form: {
+    topic:'', course:'MBA', specialization:'HR', projectType:'Research Project',
+    institution:'', requiredPages:30, requiredSlides:12, deadline:'',
+    requirements: DEFAULT_REQUIREMENTS.slice(),
+    customRequirements: [],
+    fileOutputs: OUTPUT_TYPES.map(o=>o.id)
+  },
+  customReqInput:'',
+  genProgress:0, genMessage:'', genStepIndex:-1,
+  assistantOpen:false,
+  assistantMessages:[
+    { role:'assistant', text:"I'm the desk assistant. Ask me about structuring a chapter, tightening your objectives, or what a reviewer typically checks first." }
+  ],
+  assistantInput:'',
+  theme: loadTheme(),
+  guidelineText:'',
+  scanResult:null,
+  newRef:{authors:'',year:'',title:'',source:''},
+  pomo:{ open:false, mode:'focus', secondsLeft:25*60, running:false, cycles:0 }
+};
+applyTheme(state.theme);
+let pomoInterval = null;
+
+/* ===================== FOCUS TIMER ===================== */
+
+function pomoDuration(mode){ return mode==='focus' ? 25*60 : 5*60; }
+function fmtPomo(s){ const m=Math.floor(s/60), sec=s%60; return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0'); }
+function pomoTick(){
+  const p = state.pomo;
+  p.secondsLeft--;
+  if(p.secondsLeft<=0){
+    if(p.mode==='focus'){ p.cycles++; p.mode='break'; } else { p.mode='focus'; }
+    p.secondsLeft = pomoDuration(p.mode);
+  }
+  updatePomoDOM();
+}
+function updatePomoDOM(){
+  const p = state.pomo;
+  const t = document.getElementById('pomoTime'); if(t) t.textContent = fmtPomo(p.secondsLeft);
+  const m = document.getElementById('pomoModeLabel'); if(m) m.textContent = p.mode==='focus' ? 'FOCUS SESSION' : 'SHORT BREAK';
+  const c = document.getElementById('pomoCycleCount'); if(c) c.textContent = p.cycles+' focus session'+(p.cycles===1?'':'s')+' done today';
+  const run = document.getElementById('pomoRunBtn'); if(run) run.textContent = p.running ? 'Pause' : (p.secondsLeft===pomoDuration(p.mode) ? 'Start' : 'Resume');
+}
+function pomoToggleRun(){
+  const p = state.pomo;
+  p.running = !p.running;
+  if(p.running){ pomoInterval = setInterval(pomoTick, 1000); }
+  else{ clearInterval(pomoInterval); }
+  render();
+}
+function pomoReset(){
+  clearInterval(pomoInterval);
+  state.pomo.running = false; state.pomo.mode = 'focus'; state.pomo.secondsLeft = pomoDuration('focus');
+  render();
+}
+function PomoFab(){
+  return el('button',{class:'pomo-fab', title:'Focus timer', onclick:()=>{ state.pomo.open=!state.pomo.open; render(); }}, state.pomo.open?'×':'⏱');
+}
+function PomoPanel(){
+  if(!state.pomo.open) return null;
+  const p = state.pomo;
+  return el('div',{class:'pomo-panel'},
+    el('div',{class:'pomo-mode', id:'pomoModeLabel'}, p.mode==='focus'?'FOCUS SESSION':'SHORT BREAK'),
+    el('div',{class:'pomo-time', id:'pomoTime'}, fmtPomo(p.secondsLeft)),
+    el('div',{class:'pomo-btns'},
+      el('button',{class:'btn subtle', id:'pomoRunBtn', onclick:pomoToggleRun}, p.running ? 'Pause' : (p.secondsLeft===pomoDuration(p.mode) ? 'Start' : 'Resume')),
+      el('button',{class:'btn subtle', onclick:pomoReset}, 'Reset')
+    ),
+    el('div',{class:'pomo-count', id:'pomoCycleCount'}, p.cycles+' focus session'+(p.cycles===1?'':'s')+' done today')
+  );
+}
+
+function currentProject(){
+  return state.projects.find(p=>p.id===state.currentProjectId) || null;
+}
+function saveCurrentProject(){ saveProjects(state.projects); }
+
+async function downloadText(filename, text){
+  try{
+    if(!window.claude || !window.claude.use){
+      alert("Downloads aren't available in this preview — open the published page to save files.");
+      return;
+    }
+    const downloads = await window.claude.use('downloads');
+    if(!downloads){
+      alert("Downloads aren't enabled for this view.");
+      return;
+    }
+    await downloads.save({ filename, data: text });
+  }catch(e){
+    console.error('download failed', e);
+    alert("Couldn't save that file just now — please try again.");
+  }
+}
+function toCsvRow(arr){ return arr.map(v=>{ const s=String(v); return /[",\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s; }).join(','); }
+
+const STAMP_TABS = ['word','ppt','excel','questionnaire','viva','references'];
+function stampsEarned(proj){
+  const n = (proj.reviewedTabs||[]).filter(id=>STAMP_TABS.includes(id)).length;
+  return n + (proj.qualityCheck.score>=90 ? 1 : 0);
+}
+function toggleReviewed(proj, tabId){
+  proj.reviewedTabs = proj.reviewedTabs || [];
+  if(proj.reviewedTabs.includes(tabId)) proj.reviewedTabs = proj.reviewedTabs.filter(x=>x!==tabId);
+  else proj.reviewedTabs.push(tabId);
+  saveCurrentProject();
+  render();
+}
+function sectionProgress(proj){
+  const total = proj.sections.length;
+  const done = proj.sections.filter(s=> (proj.sectionStatus||{})[s.id]==='done').length;
+  return { total, done, pct: total? Math.round(done/total*100) : 0 };
+}
+function daysUntil(dateStr){
+  if(!dateStr) return null;
+  const target = new Date(dateStr+'T00:00:00');
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  return Math.ceil((target-now)/86400000);
+}
+
+/* ===================== RENDER HELPERS ===================== */
+
+function el(tag, attrs, ...children){
+  const e = document.createElement(tag);
+  if(attrs) for(const k in attrs){
+    if(k==='class') e.className = attrs[k];
+    else if(k==='html') e.innerHTML = attrs[k];
+    else if(k.startsWith('on')) e.addEventListener(k.slice(2), attrs[k]);
+    else e.setAttribute(k, attrs[k]);
+  }
+  children.flat().forEach(c=>{
+    if(c===null||c===undefined) return;
+    if(typeof c==='string'||typeof c==='number') e.appendChild(document.createTextNode(c));
+    else e.appendChild(c);
+  });
+  return e;
+}
+
+function icon(name){
+  const map = {
+    doc:'▤', ppt:'▥', sheet:'▦', qmark:'?', mic:'◐', bar:'▉', check:'✓', warn:'!',
+  };
+  return map[name] || '·';
+}
+
+function setView(v){ state.view = v; render(); window.scrollTo({top:0,behavior:'instant'}); }
+
+/* ===================== TOPBAR ===================== */
+
+function Topbar(){
+  const bar = el('div',{class:'topbar'});
+  const brand = el('div',{class:'brand', onclick:()=>setView('landing')},
+    el('div',{class:'brand-mark'},'F'),
+    el('div',{},
+      el('span',{class:'brand-name'},'Fieldnote'),
+      el('span',{class:'brand-sub mono'},'/ project desk')
+    )
+  );
+  const nav = el('div',{class:'topnav'},
+    navBtn('New Project','create'),
+    navBtn('Library','library'),
+  );
+  const themeIcon = state.theme==='dark' ? '☾' : (state.theme==='light' ? '☀' : '◐');
+  const right = el('div',{style:'display:flex;align-items:center;gap:10px;'},
+    nav,
+    el('button',{class:'theme-toggle', title:'Theme: '+state.theme, onclick:toggleTheme}, themeIcon),
+    el('button',{class:'btn', onclick:()=>setView('create')}, '+ New')
+  );
+  bar.appendChild(brand);
+  bar.appendChild(right);
+  return bar;
+}
+function navBtn(label,view){
+  return el('button',{class:'navlink'+(state.view===view?' active':''), onclick:()=>setView(view)}, label);
+}
+
+/* ===================== LANDING ===================== */
+
+function Landing(){
+  const wrap = el('div',{});
+  wrap.appendChild(el('section',{class:'hero'},
+    el('div',{class:'wrap hero-grid'},
+      el('div',{},
+        el('div',{class:'eyebrow-row'}, el('span',{class:'stamp'},'DRAFT DESK')),
+        el('h1',{}, 'Structure the project before you write a single page.'),
+        el('p',{}, 'Fieldnote takes a topic, a page count and a list of required sections, and lays out a complete MBA/BBA project: report outline, slide deck, data sheets, questionnaire, viva prep and references — ready to write into.'),
+        el('div',{class:'hero-cta'},
+          el('button',{class:'btn', onclick:()=>setView('create')}, 'Start a project →'),
+          el('button',{class:'btn subtle', onclick:loadSample}, 'Open a sample project')
+        )
+      ),
+      el('div',{class:'cardstack'},
+        idxCard('card-1','CH. 2','Literature Review','Herzberg · Maslow · JD-R model'),
+        idxCard('card-2','SLIDE 5','Key Findings','78% weight one factor over salary'),
+        idxCard('card-3','SEC. 4','Data Analysis','r = 0.78 correlation, N = 200')
+      )
+    )
+  ));
+
+  wrap.appendChild(el('div',{class:'wrap'},
+    el('div',{class:'stats-row'},
+      statBlock('9','chapters mapped automatically'),
+      statBlock('7','output types in one pass'),
+      statBlock('18','standard sections on file'),
+    )
+  ));
+
+  wrap.appendChild(el('div',{class:'wrap'},
+    el('div',{class:'section-head'},
+      el('h2',{},'What comes out of one draft'),
+      el('span',{class:'label'},'TEN THINGS ON THE DESK')
+    ),
+    el('div',{class:'deliv-grid'},
+      delivBlock('01','Report outline','A chaptered structure — front matter through conclusion — sized to your page target, and editable in place.'),
+      delivBlock('02','Slide deck','A presentation outline mapped one-to-one against your report chapters.'),
+      delivBlock('03','Data sheets','Illustrative respondent and factor-score tables, clearly labelled as placeholders.'),
+      delivBlock('04','Questionnaire','A mixed-format instrument — multiple choice, Likert, rating, open response.'),
+      delivBlock('05','Viva prep','Anticipated examiner questions with grounded answers — plus a flip-card practice drill.'),
+      delivBlock('06','References','APA-formatted citations, with a form to add your own real sources.'),
+      delivBlock('07','Quality check','A pass over section coverage, page targets and citation formatting.'),
+      delivBlock('08','Guideline scan','Paste your department brief and pull required sections straight out of it.'),
+      delivBlock('09','Writing planner','A milestone timeline that spreads your chapters across the days until submission.'),
+      delivBlock('10','Focus timer','A quiet 25-minute focus/break timer for actual writing sessions, built into the desk.'),
+    )
+  ));
+
+  wrap.appendChild(el('div',{class:'wrap footer'},
+    el('p',{}, 'Fieldnote — a structuring tool, not a substitute for your own research and writing.')
+  ));
+  return wrap;
+}
+function statBlock(n,cap){ return el('div',{class:'stat'}, el('div',{class:'num'},n), el('div',{class:'cap mono'},cap)); }
+function delivBlock(g,t,p){ return el('div',{class:'deliv'}, el('div',{class:'glyph'},g), el('h3',{},t), el('p',{},p)); }
+function idxCard(cls,label,title,sub){
+  return el('div',{class:'idx-card '+cls},
+    el('div',{class:'idx-label'},label),
+    el('div',{class:'idx-title'},title),
+    el('div',{class:'idx-rule'}),
+    el('div',{class:'idx-line w80'}),
+    el('div',{class:'idx-line w60'}),
+    el('div',{class:'idx-label',style:'margin-top:10px;color:var(--ink-soft)'},sub)
+  );
+}
+
+function loadSample(){
+  const form = {
+    topic:'Employee Retention Strategies in the Post-Pandemic Hybrid Era',
+    course:'MBA', specialization:'HR', projectType:'Research Project',
+    institution:'Centurion University', requiredPages:30, requiredSlides:12,
+    requirements: DEFAULT_REQUIREMENTS.slice(), customRequirements:['Include a comparative view of tech vs. manufacturing sectors'],
+    fileOutputs: OUTPUT_TYPES.map(o=>o.id)
+  };
+  const project = buildProject(form);
+  state.projects = [project, ...state.projects];
+  saveProjects(state.projects);
+  state.currentProjectId = project.id;
+  state.activeTab = 'overview';
+  setView('workspace');
+}
+
+/* ===================== CREATE FORM ===================== */
+
+function Create(){
+  const f = state.form;
+  const wrap = el('div',{class:'wrap-narrow'});
+  wrap.appendChild(el('div',{class:'formhead'},
+    el('h1',{},'New project brief'),
+    el('p',{},'Fill in what you know — everything else defaults sensibly and you can adjust it in the workspace.')
+  ));
+
+  // Quick-start templates
+  wrap.appendChild(el('div',{class:'field-block'},
+    el('label',{class:'label',style:'display:block;margin-bottom:10px;'},'QUICK START — OR WRITE YOUR OWN BELOW'),
+    el('div',{class:'tmpl-row'}, QUICK_TEMPLATES.map(t=>
+      el('button',{class:'tmpl-chip', onclick:()=>{
+        f.topic=t.topic; f.course=t.course; f.specialization=t.spec; render();
+      }}, t.topic)
+    ))
+  ));
+
+  // Guideline scanner
+  wrap.appendChild(el('div',{class:'field-block'},
+    el('label',{class:'label',style:'display:block;margin-bottom:6px;'},'SCAN A GUIDELINE BRIEF (OPTIONAL)'),
+    el('div',{class:'field'},
+      el('textarea',{placeholder:'Paste your department\'s project guidelines here — e.g. "Report must be 40-45 pages with a 15-slide PPT covering literature review, methodology..."',
+        value:state.guidelineText, oninput:(e)=>state.guidelineText=e.target.value, style:'min-height:90px;'}),
+      el('div',{class:'export-row', style:'margin-top:10px;'},
+        el('button',{class:'btn subtle', onclick:scanGuidelines},'Scan brief')
+      ),
+      state.scanResult ? el('div',{class:'scan-result'},
+        el('b',{},'Found: '), (state.scanResult.pages? state.scanResult.pages+' pages · ' : '')+(state.scanResult.slides? state.scanResult.slides+' slides · ':'')+state.scanResult.matched.length+' matching sections.',
+        el('div',{style:'margin-top:8px;'}, el('button',{class:'btn subtle', onclick:applyScan},'Apply to form →'))
+      ) : null
+    )
+  ));
+
+  // Topic & basics
+  wrap.appendChild(el('div',{class:'field-block'},
+    field('Project topic', input({
+      type:'text', placeholder:'e.g. Impact of digital marketing on consumer buying behaviour',
+      value:f.topic, oninput:(e)=>{ f.topic = e.target.value; }
+    })),
+    el('div',{class:'field-row', style:'margin-top:18px;'},
+      field('Course', select(COURSES, f.course, v=>f.course=v)),
+      field('Specialization', select(SPECIALIZATIONS, f.specialization, v=>f.specialization=v)),
+    ),
+    el('div',{class:'field-row', style:'margin-top:18px;'},
+      field('Project type', select(PROJECT_TYPES, f.projectType, v=>f.projectType=v)),
+      field('Institution (optional)', input({type:'text', placeholder:'Your university or college', value:f.institution, oninput:(e)=>f.institution=e.target.value})),
+    ),
+    el('div',{class:'field-row', style:'margin-top:18px;'},
+      field('Target report pages', input({type:'number', min:10, max:120, value:f.requiredPages, oninput:(e)=>f.requiredPages=parseInt(e.target.value)||30})),
+      field('Target slide count', input({type:'number', min:5, max:40, value:f.requiredSlides, oninput:(e)=>f.requiredSlides=parseInt(e.target.value)||12})),
+    ),
+    el('div',{class:'field-row', style:'margin-top:18px;'},
+      field('Submission deadline (optional)', input({type:'date', value:f.deadline, oninput:(e)=>f.deadline=e.target.value})),
+      el('div',{})
+    )
+  ));
+
+  // Outputs
+  wrap.appendChild(el('div',{class:'field-block'},
+    el('label',{class:'label',style:'display:block;margin-bottom:10px;'},'OUTPUTS TO GENERATE'),
+    el('div',{class:'chip-grid'}, OUTPUT_TYPES.map(o=>outputChip(o)))
+  ));
+
+  // Required sections
+  wrap.appendChild(el('div',{class:'field-block'},
+    el('label',{class:'label',style:'display:block;margin-bottom:10px;'},'STANDARD SECTIONS'),
+    el('div',{class:'chip-grid'}, DEFAULT_REQUIREMENTS.map(r=>reqChip(r)))
+  ));
+
+  // Custom requirements
+  wrap.appendChild(el('div',{class:'field-block'},
+    el('label',{class:'label',style:'display:block;margin-bottom:6px;'},'ADDITIONAL REQUIREMENTS'),
+    el('div',{class:'field'},
+      el('div',{class:'inline-add'},
+        input({type:'text', placeholder:'e.g. Include an industry comparison table', value:state.customReqInput,
+          oninput:(e)=>state.customReqInput=e.target.value,
+          onkeydown:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); addCustomReq(); } }
+        }),
+        el('button',{class:'btn subtle', onclick:addCustomReq},'Add')
+      ),
+      el('div',{class:'custom-req-list'}, f.customRequirements.map((r,i)=>
+        el('div',{class:'custom-req-item'}, el('span',{},r),
+          el('button',{onclick:()=>{ f.customRequirements.splice(i,1); render(); }},'remove'))
+      ))
+    )
+  ));
+
+  wrap.appendChild(el('div',{class:'formfoot'},
+    el('button',{class:'btn subtle', onclick:()=>setView('landing')},'Cancel'),
+    el('button',{class:'btn', onclick:handleGenerate},'Build project →')
+  ));
+
+  return wrap;
+}
+
+function field(labelText, inputEl){
+  return el('div',{class:'field'}, el('label',{},labelText), inputEl);
+}
+function input(attrs){ return el('input',attrs); }
+function select(options, val, onchange){
+  const s = el('select',{onchange:(e)=>onchange(e.target.value)});
+  options.forEach(o=>{
+    const opt = el('option',{value:o}, o);
+    if(o===val) opt.setAttribute('selected','selected');
+    s.appendChild(opt);
+  });
+  return s;
+}
+function outputChip(o){
+  const on = state.form.fileOutputs.includes(o.id);
+  return el('button',{class:'chip'+(on?' on':''), onclick:()=>{
+    const f = state.form;
+    if(f.fileOutputs.includes(o.id)) f.fileOutputs = f.fileOutputs.filter(x=>x!==o.id);
+    else f.fileOutputs.push(o.id);
+    render();
+  }}, el('span',{class:'dot'}), o.label);
+}
+function reqChip(r){
+  const on = state.form.requirements.includes(r);
+  return el('button',{class:'chip'+(on?' on':''), onclick:()=>{
+    const f = state.form;
+    if(f.requirements.includes(r)) f.requirements = f.requirements.filter(x=>x!==r);
+    else f.requirements.push(r);
+    render();
+  }}, el('span',{class:'dot'}), r);
+}
+function scanGuidelines(){
+  const text = state.guidelineText;
+  if(!text || !text.trim()){ state.scanResult = null; render(); return; }
+  const pagesMatch = text.match(/(\d{1,3})\s*(?:-|to)?\s*\d{0,3}\s*pages?/i);
+  const slidesMatch = text.match(/(\d{1,2})\s*(?:-|to)?\s*\d{0,2}\s*slides?/i);
+  const lower = text.toLowerCase();
+  const matched = DEFAULT_REQUIREMENTS.filter(r => lower.includes(r.toLowerCase()));
+  state.scanResult = {
+    pages: pagesMatch ? parseInt(pagesMatch[1]) : null,
+    slides: slidesMatch ? parseInt(slidesMatch[1]) : null,
+    matched
+  };
+  render();
+}
+function applyScan(){
+  const r = state.scanResult;
+  if(!r) return;
+  const f = state.form;
+  if(r.pages) f.requiredPages = r.pages;
+  if(r.slides) f.requiredSlides = r.slides;
+  if(r.matched.length) f.requirements = Array.from(new Set([...f.requirements, ...r.matched]));
+  render();
+}
+
+function addCustomReq(){
+  if(!state.customReqInput.trim()) return;
+  state.form.customRequirements.push(state.customReqInput.trim());
+  state.customReqInput = '';
+  render();
+}
+
+function handleGenerate(){
+  if(!state.form.topic.trim()){
+    alert('Add a project topic to continue.');
+    return;
+  }
+  state.genProgress = 0;
+  state.genStepIndex = -1;
+  setView('generating');
+  runGeneration();
+}
+
+function runGeneration(){
+  let i = 0;
+  const step = ()=>{
+    if(i >= GEN_STEPS.length){
+      const project = buildProject(state.form);
+      state.projects = [project, ...state.projects];
+      saveProjects(state.projects);
+      state.currentProjectId = project.id;
+      state.activeTab = 'overview';
+      setView('workspace');
+      return;
+    }
+    state.genStepIndex = i;
+    state.genMessage = GEN_STEPS[i];
+    state.genProgress = Math.round(((i+1)/GEN_STEPS.length)*100);
+    render();
+    i++;
+    setTimeout(step, 260);
+  };
+  setTimeout(step, 200);
+}
+
+function Generating(){
+  const wrap = el('div',{class:'gen-wrap'});
+  wrap.appendChild(el('span',{class:'stamp'},'BUILDING'));
+  wrap.appendChild(el('h2',{}, 'Assembling "'+ (state.form.topic || 'your project') +'"'));
+  wrap.appendChild(el('div',{class:'progress-track'}, el('div',{class:'progress-fill', style:'width:'+state.genProgress+'%'})));
+  wrap.appendChild(el('div',{class:'gen-pct mono'}, state.genProgress+'%'));
+  wrap.appendChild(el('div',{class:'gen-msg'}, state.genMessage));
+  wrap.appendChild(el('div',{class:'gen-steps'}, GEN_STEPS.map((s,idx)=>
+    el('div',{class:'gen-step'+(idx<=state.genStepIndex?' done':'')},
+      el('span',{class:'mk'}, idx<state.genStepIndex? '✓' : (idx===state.genStepIndex? '›' : '·')),
+      el('span',{}, s)
+    )
+  )));
+  return wrap;
+}
+
+/* ===================== WORKSPACE ===================== */
+
+const TABS = [
+  {id:'overview', label:'Overview'},
+  {id:'word', label:'Report'},
+  {id:'ppt', label:'Slides'},
+  {id:'excel', label:'Data'},
+  {id:'questionnaire', label:'Questionnaire'},
+  {id:'viva', label:'Viva Prep'},
+  {id:'references', label:'References'},
+  {id:'checker', label:'Quality Check'},
+  {id:'planner', label:'Planner'},
+];
+
+function Workspace(){
+  const proj = currentProject();
+  if(!proj){
+    const empty = el('div',{class:'wrap'}, el('div',{class:'empty-state'},
+      el('p',{},'No project open yet.'),
+      el('button',{class:'btn', style:'margin-top:14px;', onclick:()=>setView('create')},'Start a project')
+    ));
+    return empty;
+  }
+  const wrap = el('div',{class:'wrap'});
+  const meta = el('div',{class:'ws-meta'},
+    el('span',{}, proj.course + ' · ' + proj.specialization),
+    el('span',{}, proj.projectType),
+    el('span',{}, proj.requiredPages+' pages · '+proj.pptSlides.length+' slides'),
+    el('span',{}, fmtDate(proj.createdAt))
+  );
+  const wsHead = el('div',{class:'ws-head'},
+    el('div',{}, el('h1',{}, proj.topic), meta),
+    el('div',{class:'ws-actions'},
+      el('button',{class:'btn subtle', onclick:()=>setView('library')},'Library'),
+      el('button',{class:'btn', onclick:()=>window.print()},'Print / Export')
+    )
+  );
+  wrap.appendChild(wsHead);
+
+  wrap.appendChild(el('div',{class:'tabbar'}, TABS.map(t=>
+    el('button',{class:'tabbtn'+(state.activeTab===t.id?' active':''), onclick:()=>{ state.activeTab=t.id; render(); }}, t.label)
+  )));
+
+  const body = el('div',{class:'ws-body'});
+  if(state.activeTab==='overview') body.appendChild(TabOverview(proj));
+  else if(state.activeTab==='word') body.appendChild(TabReport(proj));
+  else if(state.activeTab==='ppt') body.appendChild(TabSlides(proj));
+  else if(state.activeTab==='excel') body.appendChild(TabExcel(proj));
+  else if(state.activeTab==='questionnaire') body.appendChild(TabQuestionnaire(proj));
+  else if(state.activeTab==='viva') body.appendChild(TabViva(proj));
+  else if(state.activeTab==='references') body.appendChild(TabReferences(proj));
+  else if(state.activeTab==='checker') body.appendChild(TabChecker(proj));
+  else if(state.activeTab==='planner') body.appendChild(TabPlanner(proj));
+  wrap.appendChild(body);
+  return wrap;
+}
+
+function TabOverview(proj){
+  const prog = sectionProgress(proj);
+  const earned = stampsEarned(proj);
+  const totalStamps = STAMP_TABS.length + 1;
+  const dLeft = daysUntil(proj.deadline);
+
+  const wrap = el('div',{});
+
+  const topRow = el('div',{style:'display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin-bottom:22px;'});
+  if(dLeft!==null){
+    topRow.appendChild(el('span',{class:'deadline-pill'+(dLeft<=7?' urgent':'')},
+      dLeft<0 ? 'Deadline passed' : (dLeft===0 ? 'Due today' : dLeft+' day'+(dLeft===1?'':'s')+' to deadline')
+    ));
+  }
+  wrap.appendChild(topRow);
+
+  wrap.appendChild(el('div',{class:'ov-card', style:'margin-bottom:18px;'},
+    el('h3',{},'Drafting progress'),
+    el('div',{class:'progressbar'}, el('div',{class:'fill', style:'width:'+prog.pct+'%'})),
+    el('div',{class:'progress-label'}, el('span',{}, prog.done+' of '+prog.total+' report sections done'), el('span',{}, prog.pct+'%')),
+    el('div',{class:'label', style:'margin-top:18px;margin-bottom:6px;'},'DESK STAMPS — '+earned+' / '+totalStamps+' COLLECTED'),
+    el('div',{class:'stamp-row'},
+      ...STAMP_TABS.map(id=>{
+        const label = TABS.find(t=>t.id===id).label;
+        const on = (proj.reviewedTabs||[]).includes(id);
+        return el('span',{class:'stampchip'+(on?' earned':'')}, el('span',{class:'mk'}, on?'✓':'○'), label);
+      }),
+      el('span',{class:'stampchip'+(proj.qualityCheck.score>=90?' earned':'')}, el('span',{class:'mk'}, proj.qualityCheck.score>=90?'✓':'○'), 'Desk Approved')
+    )
+  ));
+
+  const grid = el('div',{class:'ov-grid'});
+  const left = el('div',{class:'ov-card'},
+    el('h3',{},'Chapter outline'),
+    ...proj.sections.map(s=> el('div',{class:'toc-row'}, el('span',{},s.title), el('span',{class:'p'},s.pageEstimate+' pg')))
+  );
+  const right = el('div',{style:'display:flex;flex-direction:column;gap:18px;'},
+    el('div',{class:'ov-card'},
+      el('h3',{},'Quality score'),
+      el('div',{class:'qscore'}, el('span',{class:'n'},proj.qualityCheck.score), el('span',{class:'of'},'/ 100')),
+      ...proj.qualityCheck.checks.slice(0,3).map(c=> el('div',{class:'qc-row'}, el('span',{class:'m'},'✓'), el('span',{class:'t'},c.name)))
+    ),
+    el('div',{class:'ov-card'},
+      el('h3',{},'Selected outputs'),
+      el('div',{class:'outlist'}, proj.fileOutputs.map(id=>{
+        const o = OUTPUT_TYPES.find(x=>x.id===id);
+        return el('div',{class:'out-row'}, el('span',{class:'dot'}), el('span',{}, o? o.label : id));
+      }))
+    )
+  );
+  grid.appendChild(left); grid.appendChild(right);
+  wrap.appendChild(grid);
+  return wrap;
+}
+
+function TabReport(proj){
+  if(!state.reportSectionId) state.reportSectionId = proj.sections[0].id;
+  proj.sectionStatus = proj.sectionStatus || {};
+  const prog = sectionProgress(proj);
+
+  const wrap = el('div',{});
+  wrap.appendChild(el('div',{class:'panel-title'},
+    el('h2',{},'Report draft'),
+    el('div',{class:'export-row'},
+      el('button',{class:'btn subtle', onclick:()=>toggleReviewed(proj,'word')}, (proj.reviewedTabs||[]).includes('word') ? '✓ Reviewed' : 'Mark reviewed'),
+      el('button',{class:'btn subtle', onclick:()=>exportReport(proj)}, 'Download .md')
+    )
+  ));
+  wrap.appendChild(el('div',{style:'margin-bottom:20px;'},
+    el('div',{class:'progressbar'}, el('div',{class:'fill', style:'width:'+prog.pct+'%'})),
+    el('div',{class:'progress-label'}, el('span',{}, prog.done+' of '+prog.total+' sections marked done'), el('span',{}, prog.pct+'%'))
+  ));
+
+  const layout = el('div',{class:'report-layout'});
+  const nav = el('div',{class:'report-nav'}, proj.sections.map(s=>{
+    const st = proj.sectionStatus[s.id] || 'draft';
+    return el('button',{class:(state.reportSectionId===s.id?'active':''), onclick:()=>{ state.reportSectionId=s.id; render(); }},
+      (st==='done'?'✓ ':(st==='writing'?'… ':'· ')) + s.title
+    );
+  }));
+  const active = proj.sections.find(s=>s.id===state.reportSectionId) || proj.sections[0];
+  const wc = active.content.trim().split(/\s+/).filter(Boolean).length;
+  const targetWords = active.pageEstimate * 300;
+  const page = el('div',{class:'report-page'},
+    el('div',{class:'pg-label'}, 'EST. '+active.pageEstimate+' PAGES'),
+    el('h2',{}, active.title),
+    el('textarea',{class:'editable-body', value:active.content,
+      oninput:(e)=>{ active.content = e.target.value; saveCurrentProject(); const wcEl=document.getElementById('wc-'+active.id); if(wcEl) wcEl.textContent = wordCountLabel(active); }
+    }, active.content),
+    el('div',{class:'review-row'},
+      el('span',{class:'wordcount'+(wc>=targetWords?' over':''), id:'wc-'+active.id}, wordCountLabel(active)),
+      el('select',{class:'status-select', onchange:(e)=>{ proj.sectionStatus[active.id]=e.target.value; saveCurrentProject(); render(); }},
+        ['draft','writing','done'].map(v=>{
+          const o = el('option',{value:v}, v==='draft'?'Not started':(v==='writing'?'In progress':'Done'));
+          if((proj.sectionStatus[active.id]||'draft')===v) o.setAttribute('selected','selected');
+          return o;
+        })
+      )
+    )
+  );
+  layout.appendChild(nav); layout.appendChild(page);
+  wrap.appendChild(layout);
+  return wrap;
+}
+function wordCountLabel(section){
+  const wc = section.content.trim().split(/\s+/).filter(Boolean).length;
+  const target = section.pageEstimate*300;
+  return wc+' words · target ~'+target;
+}
+function exportReport(proj){
+  let out = '# '+proj.topic+'\n\n';
+  proj.sections.forEach(s=>{ out += '## '+s.title+'\n\n'+s.content+'\n\n'; });
+  downloadText(slugify(proj.topic)+'-report.md', out);
+}
+function slugify(s){ return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,50) || 'project'; }
+
+function exportSlides(proj){
+  let out = proj.topic+' — Slide Outline\n'+'='.repeat(40)+'\n\n';
+  proj.pptSlides.forEach(s=>{
+    out += 'Slide '+s.slideNumber+': '+s.title+'\n';
+    if(s.subtitle) out += '  ('+s.subtitle+')\n';
+    s.bullets.forEach(b=> out += '  • '+b+'\n');
+    out += '\n';
+  });
+  downloadText(slugify(proj.topic)+'-slides.txt', out);
+}
+function exportExcel(proj){
+  let out = '';
+  proj.excelSheets.forEach(sheet=>{
+    out += '# '+sheet.name+'\n';
+    out += toCsvRow(sheet.headers)+'\n';
+    sheet.rows.forEach(r=> out += toCsvRow(r)+'\n');
+    out += '\n';
+  });
+  downloadText(slugify(proj.topic)+'-data.csv', out);
+}
+function exportQuestionnaire(proj){
+  let out = proj.topic+' — Questionnaire\n'+'='.repeat(40)+'\n\n';
+  proj.questionnaire.forEach((q,i)=>{
+    out += (i+1)+'. ['+q.section+' / '+q.type.replace('_',' ')+']\n  '+q.question+'\n';
+    if(q.options) out += '  Options: '+q.options.join(' | ')+'\n';
+    out += '\n';
+  });
+  downloadText(slugify(proj.topic)+'-questionnaire.txt', out);
+}
+function exportViva(proj){
+  let out = proj.topic+' — Viva Preparation\n'+'='.repeat(40)+'\n\n';
+  proj.vivaQuestions.forEach(v=>{
+    out += '['+v.category+']\nQ: '+v.question+'\nA: '+v.answer+'\n\n';
+  });
+  downloadText(slugify(proj.topic)+'-viva-prep.txt', out);
+}
+function exportReferences(proj){
+  let out = proj.topic+' — References (APA)\n'+'='.repeat(40)+'\n\n';
+  proj.references.forEach(r=>{ out += r.authors+' ('+r.year+'). '+r.title+'. '+r.source+'\n\n'; });
+  downloadText(slugify(proj.topic)+'-references.txt', out);
+}
+
+function TabSlides(proj){
+  const wrap = el('div',{});
+  wrap.appendChild(el('div',{class:'panel-title'}, el('h2',{},'Slide deck — '+proj.pptSlides.length+' slides'),
+    el('div',{class:'export-row'},
+      el('button',{class:'btn subtle', onclick:()=>toggleReviewed(proj,'ppt')}, (proj.reviewedTabs||[]).includes('ppt') ? '✓ Reviewed' : 'Mark reviewed'),
+      el('button',{class:'btn subtle', onclick:()=>exportSlides(proj)}, 'Download .txt')
+    )
+  ));
+  wrap.appendChild(el('div',{class:'slide-grid'}, proj.pptSlides.map(s=>
+    el('div',{class:'slide'},
+      el('span',{class:'sn mono'}, String(s.slideNumber).padStart(2,'0')),
+      el('h4',{}, s.title),
+      s.subtitle ? el('div',{class:'sub'}, s.subtitle) : null,
+      el('ul',{}, s.bullets.map(b=>el('li',{},b)))
+    )
+  )));
+  return wrap;
+}
+
+function TabExcel(proj){
+  const wrap = el('div',{});
+  wrap.appendChild(el('div',{class:'panel-title'}, el('h2',{},'Data sheets'),
+    el('div',{class:'export-row'},
+      el('button',{class:'btn subtle', onclick:()=>toggleReviewed(proj,'excel')}, (proj.reviewedTabs||[]).includes('excel') ? '✓ Reviewed' : 'Mark reviewed'),
+      el('button',{class:'btn subtle', onclick:()=>exportExcel(proj)}, 'Download .csv')
+    )
+  ));
+  wrap.appendChild(el('p',{class:'label', style:'margin-bottom:16px;'},'ILLUSTRATIVE DATA — REPLACE WITH YOUR OWN'));
+  proj.excelSheets.forEach(sheet=>{
+    wrap.appendChild(el('div',{class:'sheet-block'},
+      el('div',{class:'sheet-name'}, sheet.name),
+      el('div',{class:'tablewrap'}, el('table',{class:'dgrid'},
+        el('thead',{}, el('tr',{}, sheet.headers.map(h=>el('th',{},h)))),
+        el('tbody',{}, sheet.rows.map(r=> el('tr',{}, r.map(c=>el('td',{},String(c))))))
+      ))
+    ));
+  });
+  return wrap;
+}
+
+function TabQuestionnaire(proj){
+  const wrap = el('div',{});
+  wrap.appendChild(el('div',{class:'panel-title'}, el('h2',{},'Questionnaire — '+proj.questionnaire.length+' items'),
+    el('div',{class:'export-row'},
+      el('button',{class:'btn subtle', onclick:()=>toggleReviewed(proj,'questionnaire')}, (proj.reviewedTabs||[]).includes('questionnaire') ? '✓ Reviewed' : 'Mark reviewed'),
+      el('button',{class:'btn subtle', onclick:()=>exportQuestionnaire(proj)}, 'Download .txt')
+    )
+  ));
+  proj.questionnaire.forEach(q=>{
+    wrap.appendChild(el('div',{class:'q-item'},
+      el('div',{class:'qsec'}, q.section+' · ', el('span',{class:'q-type'}, q.type.replace('_',' '))),
+      el('p',{class:'qtext'}, q.question),
+      q.options ? el('div',{class:'q-opts'}, q.options.map(o=>el('span',{class:'q-opt'},o))) : null
+    ));
+  });
+  return wrap;
+}
+
+function TabViva(proj){
+  const wrap = el('div',{});
+  wrap.appendChild(el('div',{class:'panel-title'}, el('h2',{},'Viva preparation — '+proj.vivaQuestions.length+' questions'),
+    el('div',{class:'export-row'},
+      el('button',{class:'btn subtle', onclick:()=>toggleReviewed(proj,'viva')}, (proj.reviewedTabs||[]).includes('viva') ? '✓ Reviewed' : 'Mark reviewed'),
+      el('button',{class:'btn subtle', onclick:()=>exportViva(proj)}, 'Download .txt'),
+      el('button',{class:'btn subtle', onclick:()=>{ state.vivaDrillActive=!state.vivaDrillActive; state.vivaDrillIndex=0; state.vivaDrillRevealed=false; render(); }}, state.vivaDrillActive ? 'Exit drill' : '▶ Practice drill')
+    )
+  ));
+
+  if(state.vivaDrillActive){
+    const qs = proj.vivaQuestions;
+    const i = state.vivaDrillIndex % qs.length;
+    const v = qs[i];
+    wrap.appendChild(el('div',{class:'viva-item', style:'min-height:180px;'},
+      el('div',{class:'viva-cat'}, v.category+'  ·  card '+(i+1)+' of '+qs.length),
+      el('p',{class:'viva-q'}, v.question),
+      state.vivaDrillRevealed ? el('p',{class:'viva-a'}, v.answer) : el('button',{class:'btn subtle', onclick:()=>{ state.vivaDrillRevealed=true; render(); }}, 'Reveal answer'),
+      el('div',{style:'display:flex;gap:10px;margin-top:16px;'},
+        el('button',{class:'btn subtle', onclick:()=>{ state.vivaDrillIndex=(i+1)%qs.length; state.vivaDrillRevealed=false; render(); }}, 'Next card →')
+      )
+    ));
+    return wrap;
+  }
+
+  proj.vivaQuestions.forEach(v=>{
+    wrap.appendChild(el('div',{class:'viva-item'},
+      el('div',{class:'viva-cat'}, v.category),
+      el('p',{class:'viva-q'}, v.question),
+      el('p',{class:'viva-a'}, v.answer)
+    ));
+  });
+  return wrap;
+}
+
+function TabReferences(proj){
+  const wrap = el('div',{});
+  wrap.appendChild(el('div',{class:'panel-title'}, el('h2',{},'References — APA style'),
+    el('div',{class:'export-row'},
+      el('button',{class:'btn subtle', onclick:()=>toggleReviewed(proj,'references')}, (proj.reviewedTabs||[]).includes('references') ? '✓ Reviewed' : 'Mark reviewed'),
+      el('button',{class:'btn subtle', onclick:()=>exportReferences(proj)}, 'Download .txt')
+    )
+  ));
+  proj.references.forEach(r=>{
+    wrap.appendChild(el('div',{class:'ref-item'},
+      el('span',{class:'ref-badge '+(r.type==='Verified'?'v':'p')}, r.type),
+      el('div',{class:'ref-text'}, el('b',{},r.authors+' ('+r.year+'). '), r.title+'. '+r.source)
+    ));
+  });
+  const nr = state.newRef;
+  wrap.appendChild(el('div',{class:'addref-form'},
+    input({type:'text', placeholder:'Authors (e.g. Rao, P. & Singh, K.)', value:nr.authors, oninput:(e)=>nr.authors=e.target.value}),
+    input({type:'text', placeholder:'Year', value:nr.year, oninput:(e)=>nr.year=e.target.value}),
+    input({type:'text', placeholder:'Title', value:nr.title, oninput:(e)=>nr.title=e.target.value, class:'full'}),
+    input({type:'text', placeholder:'Source (journal, publisher, volume, pages)', value:nr.source, oninput:(e)=>nr.source=e.target.value, class:'full'}),
+    el('button',{class:'btn subtle full', onclick:()=>addReference(proj)}, 'Add reference')
+  ));
+  return wrap;
+}
+function addReference(proj){
+  const nr = state.newRef;
+  if(!nr.authors.trim() || !nr.title.trim()) return;
+  proj.references.push({ id: uid('r'), authors:nr.authors.trim(), year:nr.year.trim()||'—', title:nr.title.trim(), source:nr.source.trim()||'—', type:'Verified' });
+  state.newRef = {authors:'',year:'',title:'',source:''};
+  saveCurrentProject();
+  render();
+}
+
+function TabChecker(proj){
+  const wrap = el('div',{});
+  wrap.appendChild(el('div',{class:'check-big'},
+    el('div',{class:'check-ring'}, proj.qualityCheck.score),
+    el('div',{},
+      el('div',{class:'label',style:'margin-bottom:6px;'},'OVERALL QUALITY SCORE'),
+      el('p',{style:'margin:0;font-size:14px;color:var(--ink-soft);max-width:44ch;'}, 'A structural check across section coverage, page targets, deck alignment and citation formatting. This does not evaluate the quality of your writing or analysis.')
+    )
+  ));
+  wrap.appendChild(el('div',{class:'check-list'}, proj.qualityCheck.checks.map(c=>
+    el('div',{class:'check-row'}, el('span',{class:'icon'},'✓'), el('div',{}, el('p',{class:'cn'},c.name), el('p',{class:'cd'},c.details)))
+  )));
+  return wrap;
+}
+
+function computeMilestones(proj){
+  const items = proj.sections.map(s=>({ id:s.id, title:'Draft: '+s.title, pages:s.pageEstimate }));
+  items.push({ id:'final-review', title:'Final review, formatting & printing', pages:null });
+  return items;
+}
+
+function TabPlanner(proj){
+  proj.plannerDone = proj.plannerDone || {};
+  const items = computeMilestones(proj);
+  const dLeft = daysUntil(proj.deadline);
+
+  const wrap = el('div',{});
+  wrap.appendChild(el('div',{class:'panel-title'},
+    el('h2',{},'Writing planner'),
+    dLeft!==null ? el('span',{class:'deadline-pill'+(dLeft<=7?' urgent':'')},
+      dLeft<0 ? 'Deadline passed' : (dLeft===0?'Due today':dLeft+' day'+(dLeft===1?'':'s')+' left')
+    ) : el('span',{class:'label'},'NO DEADLINE SET')
+  ));
+  wrap.appendChild(el('div',{class:'plan-setup'},
+    field('Submission deadline', input({type:'date', value:proj.deadline||'', oninput:(e)=>{ proj.deadline=e.target.value; saveCurrentProject(); render(); }})),
+    el('div',{class:'label'}, 'Set a date and the '+items.length+' milestones below spread evenly toward it.')
+  ));
+
+  let dates = null;
+  if(proj.deadline){
+    const target = new Date(proj.deadline+'T00:00:00');
+    const today = new Date(); today.setHours(0,0,0,0);
+    const totalDays = Math.round((target-today)/86400000);
+    if(totalDays>0){
+      dates = items.map((_,i)=> new Date(today.getTime() + Math.round(totalDays*(i+1)/items.length)*86400000));
+    }
+  }
+
+  const tl = el('div',{class:'timeline'});
+  const now = new Date();
+  items.forEach((it,i)=>{
+    const done = !!proj.plannerDone[it.id];
+    const dateLabel = dates ? fmtDate(dates[i].toISOString()) : ('Milestone '+(i+1)+' of '+items.length);
+    const overdue = dates ? (dates[i] < now && !done) : false;
+    const checkboxAttrs = { type:'checkbox', onchange:()=>{ proj.plannerDone[it.id]=!proj.plannerDone[it.id]; saveCurrentProject(); render(); } };
+    if(done) checkboxAttrs.checked = 'checked';
+    tl.appendChild(el('div',{class:'tl-item'+(done?' past':'')},
+      el('div',{class:'tl-date', style: overdue ? 'color:var(--red);' : ''}, dateLabel + (overdue ? ' · overdue' : '')),
+      el('div',{class:'tl-title'},
+        el('label',{style:'display:flex;align-items:flex-start;gap:9px;cursor:pointer;'},
+          el('input',checkboxAttrs),
+          el('span',{style: done ? 'text-decoration:line-through;color:var(--ink-faint);' : ''}, it.title)
+        )
+      ),
+      el('div',{class:'tl-desc'}, it.pages ? ('Target roughly '+it.pages+' pages for this section.') : 'Proofread, verify citations, and prepare your final exports.')
+    ));
+  });
+  wrap.appendChild(tl);
+  return wrap;
+}
+
+/* ===================== LIBRARY ===================== */
+
+function Library(){
+  const wrap = el('div',{class:'wrap'});
+  wrap.appendChild(el('div',{class:'section-head', style:'margin-top:30px;'},
+    el('h2',{},'Project library'),
+    el('span',{class:'label'}, state.projects.length + ' SAVED')
+  ));
+  if(state.projects.length===0){
+    wrap.appendChild(el('div',{class:'empty-state'}, el('p',{},'Nothing here yet.'), el('button',{class:'btn',style:'margin-top:14px;', onclick:()=>setView('create')},'Start a project')));
+    return wrap;
+  }
+  wrap.appendChild(el('div',{class:'lib-grid'}, state.projects.map(p=>{
+    const prog = sectionProgress(p);
+    return el('div',{class:'lib-card', onclick:()=>{ state.currentProjectId=p.id; state.activeTab='overview'; setView('workspace'); }},
+      el('div',{class:'lc-course'}, p.course+' · '+p.specialization),
+      el('h4',{}, p.topic),
+      el('div',{class:'progressbar'}, el('div',{class:'fill', style:'width:'+prog.pct+'%'})),
+      el('div',{class:'lc-foot'},
+        el('span',{class:'lc-date mono'}, fmtDate(p.createdAt)+' · '+prog.pct+'% drafted'),
+        el('button',{class:'lc-del', onclick:(e)=>{ e.stopPropagation(); deleteProject(p.id); }},'delete')
+      )
+    );
+  })));
+  return wrap;
+}
+function deleteProject(id){
+  state.projects = state.projects.filter(p=>p.id!==id);
+  saveProjects(state.projects);
+  if(state.currentProjectId===id) state.currentProjectId = null;
+  render();
+}
+
+/* ===================== ASSISTANT ===================== */
+
+const ASST_REPLIES = [
+  "Start your literature review from the gap, not the theory — name what's missing first, then bring in the frameworks that help explain it.",
+  "Keep your objectives to three or four, each one directly checkable against a chapter later in the report.",
+  "For the methodology chapter, justify your sample size in one sentence — reviewers look for that first.",
+  "A questionnaire item is doing its job if you can already guess what you'll do with the answer. Cut any that don't pass that test.",
+  "In the viva, examiners usually open with 'why this topic' — have a two-sentence answer ready that isn't just the abstract restated.",
+  "Findings read stronger when you lead with the one result that surprised you, not the one you expected."
+];
+function assistantReply(){
+  return ASST_REPLIES[Math.floor(Math.random()*ASST_REPLIES.length)];
+}
+
+function AssistantFab(){
+  if(state.view==='landing') { /* still show, harmless */ }
+  return el('button',{class:'asst-fab', onclick:()=>{ state.assistantOpen=!state.assistantOpen; render(); }, 'aria-label':'Open desk assistant'}, state.assistantOpen?'×':'✎');
+}
+
+function AssistantPanel(){
+  if(!state.assistantOpen) return null;
+  const panel = el('div',{class:'asst-panel'});
+  panel.appendChild(el('div',{class:'asst-head'}, el('span',{class:'t'},'DESK ASSISTANT'), el('button',{onclick:()=>{state.assistantOpen=false; render();}},'×')));
+  const msgs = el('div',{class:'asst-msgs', id:'asstMsgsBox'}, state.assistantMessages.map(m=>
+    el('div',{class:'asst-msg '+m.role}, m.text)
+  ));
+  panel.appendChild(msgs);
+  const row = el('div',{class:'asst-input-row'},
+    input({type:'text', placeholder:'Ask about your project…', value:state.assistantInput,
+      oninput:(e)=>state.assistantInput=e.target.value,
+      onkeydown:(e)=>{ if(e.key==='Enter'){ e.preventDefault(); sendAsst(); } }
+    }),
+    el('button',{onclick:sendAsst},'Send')
+  );
+  panel.appendChild(row);
+  setTimeout(()=>{ const box=document.getElementById('asstMsgsBox'); if(box) box.scrollTop = box.scrollHeight; },0);
+  return panel;
+}
+function sendAsst(){
+  const txt = state.assistantInput.trim();
+  if(!txt) return;
+  state.assistantMessages.push({role:'user', text:txt});
+  state.assistantInput = '';
+  render();
+  setTimeout(()=>{
+    state.assistantMessages.push({role:'assistant', text: assistantReply()});
+    render();
+  }, 380);
+}
+
+/* ===================== ROOT RENDER ===================== */
+
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  app.appendChild(Topbar());
+  const main = el('main',{});
+  if(state.view==='landing') main.appendChild(Landing());
+  else if(state.view==='create') main.appendChild(Create());
+  else if(state.view==='generating') main.appendChild(Generating());
+  else if(state.view==='workspace') main.appendChild(Workspace());
+  else if(state.view==='library') main.appendChild(Library());
+  app.appendChild(main);
+  app.appendChild(AssistantFab());
+  const panel = AssistantPanel();
+  if(panel) app.appendChild(panel);
+  app.appendChild(PomoFab());
+  const pomoPanel = PomoPanel();
+  if(pomoPanel) app.appendChild(pomoPanel);
+}
+
+render();
+})();
+</script>
+</body>
+</html>
